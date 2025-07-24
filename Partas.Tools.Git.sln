@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Partas.Tools.Git", "Partas.Tools.Git\Partas.Tools.Git.fsproj", "{94179F7E-DF20-4BD7-A481-D8D4583A2516}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Partas.Tools.Cli.Binding", "Partas.Tools.Cli.Binding\Partas.Tools.Cli.Binding.fsproj", "{AADF756F-BD02-455F-BB75-A366A7673FE0}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Partas.Tools.Cli.Binding.Tests", "Partas.Tools.Cli.Binding.Tests\Partas.Tools.Cli.Binding.Tests.fsproj", "{3A4D41AC-3D03-422C-BC2E-81E19F91BD81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94179F7E-DF20-4BD7-A481-D8D4583A2516}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94179F7E-DF20-4BD7-A481-D8D4583A2516}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94179F7E-DF20-4BD7-A481-D8D4583A2516}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94179F7E-DF20-4BD7-A481-D8D4583A2516}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AADF756F-BD02-455F-BB75-A366A7673FE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AADF756F-BD02-455F-BB75-A366A7673FE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AADF756F-BD02-455F-BB75-A366A7673FE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AADF756F-BD02-455F-BB75-A366A7673FE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A4D41AC-3D03-422C-BC2E-81E19F91BD81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A4D41AC-3D03-422C-BC2E-81E19F91BD81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A4D41AC-3D03-422C-BC2E-81E19F91BD81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A4D41AC-3D03-422C-BC2E-81E19F91BD81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
