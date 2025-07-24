@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Partas.Tools.Cli.Binding.Tests/Partas.Tools.Cli.Binding.Tests.fsproj" />
+  <Project Path="Partas.Tools.Cli.Binding/Partas.Tools.Cli.Binding.fsproj" />
+  <Project Path="Partas.Tools.Git/Partas.Tools.Git.fsproj" />
+</Solution>

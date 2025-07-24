@@ -142,17 +142,3 @@ let run<'T> (args: GitCommand<'T> -> GitCommand<'T>) directory =
         |> Async.AwaitTask
         |> Async.RunSynchronously
     shaStdout
-
-@"C:\Users\shaya\RiderProjects\EasyBuild.ChangelogGen\"
-|> run (fun args ->
-        {
-            args with
-                Options = [
-                    Config.List
-                    // Config.All
-                ]
-                Args = [
-                ]
-        }
-    )
-|> printfn "%A"
