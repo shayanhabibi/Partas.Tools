@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <PackageId>Partas.LibGit2Sharp.FSharp</PackageId>
+        <Title>Partas.LibGit2Sharp.FSharp</Title>
+        <Company>Partas</Company>
+        <Description>A (incomplete) F# friendly wrapper around LibGit2Sharp</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/shayanhabibi/Partas.Tools</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Partas;LibGit2Sharp;Wrapper;F#;FSharp</PackageTags>
+        <Authors>Shayan Habibi</Authors>
+        <Copyright>Copyright (c) Shayan Habibi 2025</Copyright>
+        <Version>0.1.0</Version>
+        <PackageVersion>0.1.0</PackageVersion>
+        <PackageReleaseNotes>Initial Release</PackageReleaseNotes>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <PackageIcon>Partas_d00b_00a icon.png</PackageIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Program.fs"/>
+        <None Include="README.md" Pack="true" PackagePath="\" >
+            <Link>Public\README.md</Link>
+        </None>
+        <None Include="..\Partas.Tools.SepochSemver\Public\Partas_d00b_00a icon.png">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+            <Link>Public\icon.png</Link>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
+    </ItemGroup>
+
+</Project>

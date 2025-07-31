@@ -4,8 +4,13 @@ open Partas.Tools.Cli.Binding
 open System
 open BlackFox.CommandLine
 
+type GitOption =
+    interface
+        static member inline op_Implicit(other: #GitOption): GitOption = other :> GitOption
+    end
+
 type GitCommand<'T> = {
-    Options: 'T list
+    Options: GitOption list
     Args: string list
 }
 
@@ -143,6 +148,7 @@ type RevList =
     | Graph
     | ShowLinearBreak of string
     | Count
+    interface GitOption
 
 [<CliBinding(Equals = ":")>]
 type PrettyFormats =
@@ -156,6 +162,7 @@ type PrettyFormats =
     | Mboxrd
     | Raw
     | Format of string
+    interface GitOption
 
 [<CliBinding>]
 type ShowRef =
@@ -169,6 +176,7 @@ type ShowRef =
     | Abbrev of int
     | Quiet
     | ExcludeExisting of pattern: string
+    interface GitOption
 
 [<CliBinding>]
 type Log =
@@ -190,11 +198,11 @@ type Log =
         Casing=Casing.None,
         Equals=":")
     >] L of funcName: string * file: string
-
+    interface GitOption
 [<CliBinding>]
 type Tag =
     | List
-
+    interface GitOption
 [<CliBinding>]
 type Branch =
     | List
@@ -203,7 +211,7 @@ type Branch =
     | Verbose
     | Abbrev
     | NoAbbrev
-
+    interface GitOption
 [<CliBinding>]
 type ForEachRef =
     | Count of int
@@ -224,14 +232,15 @@ type ForEachRef =
     | OmitEmpty
     | Exclude
     | IncludeRootRefs
-
+    interface GitOption
 [<CliBinding>]
 type Config =
     | All
     | [<CliBinding(Prefix="")>] List
-
+    interface GitOption
 [<CliBinding(Prefix="")>]
 type ConfigCommands =
     | List
     | Get
     | Set
+    interface GitOption

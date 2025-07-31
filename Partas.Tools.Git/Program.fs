@@ -97,7 +97,7 @@ module Placeholders =
 
 module Format =
     let simpleJson = $"""{{
-    \"hash\": \"{Placeholders.Commit.Abbrev.hash}\",
+    \"hash\": \"{Placeholders.Commit.hash}\",
     \"author\": {{ \
         \"name\": \"{Placeholders.Author.name}\",
         \"email\": \"{Placeholders.Author.email}\",
