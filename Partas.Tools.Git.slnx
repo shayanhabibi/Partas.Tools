@@ -1,5 +1,10 @@
 <Solution>
+  <Project Path="Partas.LibGit2Sharp.FSharp\Partas.LibGit2Sharp.FSharp.fsproj" Type="Classic F#" />
   <Project Path="Partas.Tools.Cli.Binding.Tests/Partas.Tools.Cli.Binding.Tests.fsproj" />
   <Project Path="Partas.Tools.Cli.Binding/Partas.Tools.Cli.Binding.fsproj" />
+  <Project Path="Partas.Tools.Cli\Partas.Tools.Cli.fsproj" Type="Classic F#" />
+  <Project Path="Partas.Tools.Fake\Partas.Tools.Fake.fsproj" Type="Classic F#" />
   <Project Path="Partas.Tools.Git/Partas.Tools.Git.fsproj" />
+  <Project Path="Partas.Tools.GitNet\Partas.Tools.GitNet.fsproj" Type="Classic F#" />
+  <Project Path="Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" Type="Classic F#" />
 </Solution>

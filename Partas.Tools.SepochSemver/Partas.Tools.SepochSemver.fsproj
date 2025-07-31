@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <PackageId>Partas.Tools.SepochSemver</PackageId>
+        <Title>Partas.Tools.SepochSemver</Title>
+        <Company>Partas</Company>
+        <Description>An opinionated spec extension and parser of Semver with an optional EPOCH and Scope prefix.</Description>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/shayanhabibi/Partas.Tools</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageTags>Partas;Semver;Epoch;Scope;Sepoch;F#;FSharp</PackageTags>
+        <Authors>Shayan Habibi</Authors>
+        <Copyright>Copyright (c) Shayan Habibi 2025</Copyright>
+        <Version>0.1.0</Version>
+        <PackageVersion>0.1.0</PackageVersion>
+        <PackageReleaseNotes>Initial release</PackageReleaseNotes>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Program.fs"/>
+        <Compile Include="AssemblyInfo.fs" />
+        <None Include="README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Fake.Core.String" Version="6.1.3" />
+      <PackageReference Include="Semver" Version="3.0.0" />
+      <PackageReference Include="XParsec" Version="0.2.0" />
+    </ItemGroup>
+
+</Project>
