@@ -26,7 +26,7 @@
         <None Include="README.md" Pack="true" PackagePath="\" />
         <None Include="Public\Partas_d00b_00a icon.png">
           <Pack>True</Pack>
-          <PackagePath></PackagePath>
+          <PackagePath>\</PackagePath>
         </None>
     </ItemGroup>
 

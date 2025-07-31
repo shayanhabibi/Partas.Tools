@@ -1,16 +1,11 @@
 ﻿open System.Linq
-open Partas.Tools.GitNet.ProjectCracker
+open Partas.Tools.GitNet.RepoCracker
 open Partas.Tools.GitNet.Types
 open Partas.Tools.SepochSemver
 open LibGit2Sharp
 open LibGit2Sharp.FSharp
 open FSharp.Linq
 
-let getRepository path =
-    let inline (!?) func target = if func target then ValueSome target else ValueNone
-    Repository.discover path
-    |> !? Repository.isValid
-    |> ValueOption.map Repository.load
 let tryParseSepochSemverFromTag (tag: Tag) =
     try
     tag
@@ -33,6 +28,15 @@ let getCommitsBetweenTags repo (sepoch1: SepochSemver) (sepoch2: SepochSemver) =
 let getCommitsToTag repo (sepoch: SepochSemver) =
     Repository.commits repo
     |> CommitLog.Query.between (sepoch.ToString()) "HEAD"
+
+let treeFiles (tree: Tree) =
+    let peelToTree = TreeEntry.target >> GitObject.unsafePeel<Tree>
+    let rec folder = fun (state: TreeEntry list) (tree: TreeEntry) ->
+        if tree |> TreeEntry.targetIsTree then
+            peelToTree tree |> Seq.fold folder state
+        else tree :: state
+    tree |> Seq.fold folder []
+    |> List.map _.Name
 
 [<EntryPoint>]
 let main args =
@@ -69,6 +73,7 @@ let main args =
     "<bubbles> 1.3.0"
     |> parseSepochSemver
     |> printfn "%A"
+    let repo = Repository.load @"C:\Users\shaya\RiderProjects\Partas.Solid.Plugin\"
     getTagCollection repo |> Seq.map Seq.toList |> Seq.toList |> printfn "%A"
     let tags = (getTagCollection repo)
     for groups in tags do
@@ -80,11 +85,14 @@ let main args =
                 |> Seq.map (Commit.message >> ConventionalCommits.parseCommit)
                 |> printfn "%A"
                 getCommitsBetweenTags repo value[0] value[2]
+        |> fun c ->
+            c
+            |> fun o -> o |> Seq.length |> printfn "%A"; o
+            |> Seq.map (
+                _.Tree
+                >> treeFiles
+            )
+        
+        |> fun o -> o |> Seq.length |> printfn "%A"; o
         |> printfn "%A"
-    repo |> Repository.info |> RepositoryInformation.workingDirectory |> printfn "%s"
-    {
-        GitNetConfig.init with
-            RepositoryPath = @"C:\Users\shaya\RiderProjects\Partas.Solid.Plugin\"
-    } |> crackRepository
-    |> printfn "%A"
     0

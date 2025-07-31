@@ -6,10 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Types.fs" />
         <Compile Include="LibGit2Sharp.fs" />
         <Compile Include="ConventionalCommits.fs" />
-        <Compile Include="Types.fs" />
-        <Compile Include="ProjectCracker.fs" />
+        <Compile Include="CommitCategorisation.fs" />
+        <Compile Include="RepoCracker.fs" />
         <Compile Include="Program.fs"/>
         <Content Include="README.md" />
     </ItemGroup>
