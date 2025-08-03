@@ -1,4 +1,4 @@
-﻿module Tests
+module SepochSemverTests
 
 open Expecto
 open Partas.Tools.SepochSemver

@@ -4,7 +4,6 @@ open System.IO
 open System.Xml.XPath
 open Partas.Tools.GitNet.Types
 open FsToolkit.ErrorHandling
-// Globs the working directory for a repo to find all projects within
 open LibGit2Sharp
 open LibGit2Sharp.FSharp
 open Fake.Core
@@ -13,14 +12,7 @@ open Fake.IO.Globbing
 open Fake.IO.Globbing.Operators
 open Fake.DotNet
 
-type CrackedProject = {
-    ProjectDirectory: string
-    ProjectFileName: string
-    SourceFiles: string list
-    AssemblyFile: string voption
-    Scope: string voption
-    Epoch: string voption
-}
+// Globs the working directory for a repo to find all projects within
 
 module private Repo =
     let private getRepository path =
@@ -68,7 +60,10 @@ module private Projects =
         extractElementValue "Title" project
         |> ValueOption.orElse (extractElementValue "PackageId" project)
 
-type CrackRepoResult = CrackRepoResult of repoDir: string * CrackedProject seq
+type CrackRepoResult = {
+    RepoDirectory: string
+    Projects: CrackedProject seq
+}
 
 let crackRepo (config: GitNetConfig) = voption {
     let! repoDir = Repo.getPath config
@@ -96,7 +91,6 @@ let crackRepo (config: GitNetConfig) = voption {
             Scope =
                 match config.ProjectConfig.AutoScope with
                 | NoScoping -> ValueNone
-                | Default -> proj |> Projects.tryGetScope
                 | Transform transformer ->
                     proj |> Projects.tryGetTitle
                     |> ValueOption.orElse (path |> Path.GetFileNameWithoutExtension |> ValueSome)
@@ -104,8 +98,7 @@ let crackRepo (config: GitNetConfig) = voption {
             Epoch = proj |> Projects.tryGetEpoch
         }
     return
-        CrackRepoResult
-        (repoDir,
-         Projects.findProjectsAndLoad repoDir
-         |> Seq.map makeCrackedProj)
+        { RepoDirectory = repoDir
+          Projects = Projects.findProjectsAndLoad repoDir
+                     |> Seq.map makeCrackedProj }
 }

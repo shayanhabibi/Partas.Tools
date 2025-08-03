@@ -1,10 +1,17 @@
 <Solution>
-  <Project Path="Partas.LibGit2Sharp.FSharp\Partas.LibGit2Sharp.FSharp.fsproj" Type="Classic F#" />
-  <Project Path="Partas.Tools.Cli.Binding.Tests/Partas.Tools.Cli.Binding.Tests.fsproj" />
-  <Project Path="Partas.Tools.Cli.Binding/Partas.Tools.Cli.Binding.fsproj" />
-  <Project Path="Partas.Tools.Fake\Partas.Tools.Fake.fsproj" Type="Classic F#" />
-  <Project Path="Partas.Tools.Git/Partas.Tools.Git.fsproj" />
-  <Project Path="Partas.Tools.GitNet\Partas.Tools.GitNet.fsproj" Type="Classic F#" />
-  <Project Path="Partas.Tools.SepochSemver.Tests\Partas.Tools.SepochSemver.Tests.fsproj" Type="Classic F#" />
-  <Project Path="Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" Type="Classic F#" />
+  <Folder Name="/src/">
+    <Project Path="Partas.LibGit2Sharp.FSharp\Partas.LibGit2Sharp.FSharp.fsproj" Type="Classic F#" />
+    <Project Path="Partas.Tools.Cli.Binding/Partas.Tools.Cli.Binding.fsproj" />
+    <Project Path="Partas.Tools.ConventionalCommits\Partas.Tools.ConventionalCommits.fsproj" Type="Classic F#" />
+    <Project Path="Partas.Tools.GitNet\Partas.Tools.GitNet.fsproj" Type="Classic F#" />
+    <Project Path="Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" Type="Classic F#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="Partas.Tools.Cli.Binding.Tests/Partas.Tools.Cli.Binding.Tests.fsproj" />
+    <Project Path="Partas.Tools.GitNet.Tests\Partas.Tools.GitNet.Tests.fsproj" Type="Classic F#" />
+  </Folder>
+  <Folder Name="/unfinished or abandonware/">
+    <Project Path="Partas.Tools.Fake\Partas.Tools.Fake.fsproj" Type="Classic F#" />
+    <Project Path="Partas.Tools.Git/Partas.Tools.Git.fsproj" />
+  </Folder>
 </Solution>

@@ -1,16 +1,11 @@
 ﻿module Partas.Tools.GitNet.CommitCategorisation
 
-open ConventionalCommits
+open ConventionalCommits.Types
 open Partas.Tools.GitNet.Types
 
-// Only works with conventional commits, or with regex (because im lazy)
+// Categorisation for Conventional Commits, or using XParsec.
 
-[<RequireQualifiedAccess>]
-type BumpType =
-    | Minor
-    | Major
-    | Patch
-    | Epoch of string
+
 
 [<AutoOpen>]
 module private Helpers =

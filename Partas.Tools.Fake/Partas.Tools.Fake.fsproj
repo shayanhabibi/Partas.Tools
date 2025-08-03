@@ -8,6 +8,7 @@
     <ItemGroup>
         <Compile Include="Program.fs" />
         <None Include="PartasToolsFakeTest.fsx" />
+        <Content Include="README.md" />
     </ItemGroup>
 
     <ItemGroup>

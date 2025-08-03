@@ -9,7 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Tests.fs" />
+        <Compile Include="Helpers.fs" />
+        <Compile Include="SepochSemverTests.fs" />
+        <Compile Include="ConventionalCommitTests.fs" />
         <Compile Include="Main.fs"/>
     </ItemGroup>
 
@@ -17,9 +19,11 @@
         <PackageReference Include="Expecto" Version="10.*"/>
         <PackageReference Include="YoloDev.Expecto.TestSdk" Version="0.15.*"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*"/>
+        <PackageReference Include="FsCheck" Version="2.*"/>
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Partas.Tools.ConventionalCommits\Partas.Tools.ConventionalCommits.fsproj" />
       <ProjectReference Include="..\Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" />
     </ItemGroup>
 </Project>

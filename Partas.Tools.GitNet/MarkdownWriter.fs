@@ -7,7 +7,8 @@ open Partas.Tools
 open SepochSemver
 open LibGit2Sharp.FSharp
 open LibGit2Sharp.FSharpPatterns
-
+open Partas.Tools.GitNet.Types
+open ConventionalCommits.Types
 [<AutoOpen>]
 module internal CEs =
     type MarkdownBuilder() =

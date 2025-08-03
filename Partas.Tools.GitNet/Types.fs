@@ -1,7 +1,8 @@
 ﻿module Partas.Tools.GitNet.Types
 
-open ConventionalCommits
+open Fake.Core
 
+type ParsedCommit = ConventionalCommits.Types.ParsedCommit
 type GitNetCommit = {
     ParsedCommit: ParsedCommit
     Original: LibGit2Sharp.Commit
@@ -10,14 +11,14 @@ type GitNetCommit = {
 module GitNetCommit =
     open LibGit2Sharp.FSharp
     let private (|ConventionalOrBreaking|IsUnconventional|) = function
-        | Conventional commit | Breaking commit -> ConventionalOrBreaking commit
-        | Unconventional commit -> IsUnconventional commit
-    let create commit =
+        | ParsedCommit.Conventional commit | ParsedCommit.Breaking commit -> ConventionalOrBreaking commit
+        | ParsedCommit.Unconventional commit -> IsUnconventional commit
+    let create parser commit =
         {
             ParsedCommit =
                 commit
                 |> Commit.message
-                |> parseCommit
+                |> parser
             Original = commit
         }
     let original = function { Original = original } -> original
@@ -53,12 +54,24 @@ module GitNetCommit =
         | { Original = original } ->
             original |> Commit.subject
     let parsedSubject = function
-        | { ParsedCommit = Unconventional _ } -> ValueNone
+        | { ParsedCommit = ParsedCommit.Unconventional _ } -> ValueNone
         | commit -> subject commit |> ValueSome
     let footers = function
         | { ParsedCommit = ConventionalOrBreaking { Footers = footers } } ->
             footers
         | _ -> []
+
+// ========== Projects
+type CrackedProject = {
+    ProjectDirectory: string
+    ProjectFileName: string
+    SourceFiles: string list
+    AssemblyFile: string voption
+    Scope: string voption
+    Epoch: string voption
+}
+
+// ========== Configs
 
 /// <summary>
 /// Configures the behaviour for parsing Sepochs in GitNet
@@ -110,7 +123,6 @@ type SemverConfig = {
 
 type AutoScopeType =
     | NoScoping
-    | Default
     | Transform of transformer: (string -> string)
 
 type ProjectConfig = {
@@ -173,3 +185,66 @@ module GitNetConfig =
         RepositoryPath = __SOURCE_DIRECTORY__
         ChangelogConfig = ChangelogConfig.init
     }
+    let autoScope = function
+        { ProjectConfig = { AutoScope = value } } ->
+            match value with
+            | Transform transformer -> ValueSome transformer
+            | NoScoping -> ValueNone
+
+open LibGit2Sharp.FSharp
+// ========= Workers
+type GitNetRuntime(?config: GitNetConfig) =
+    let config =
+        lazy
+        #if DEBUG
+        if config.IsNone then
+            Trace.log "GitNet running with default configuration."
+        #endif
+        defaultArg config GitNetConfig.init
+    let repo =
+        lazy
+        let doLoad =
+             lazy
+             config.Value.RepositoryPath
+             |> Repository.load
+        #if DEBUG
+        Trace.log $"GitNet loading repository from path: %s{config.Value.RepositoryPath}"
+        try
+        doLoad.Value
+        with e -> failwith $"GitNet must be run from, or given a valid repository directory through creating the GitNetRuntime\
+                            with a config that has RepositoryPath set correctly.\nException: {e}"
+        #else
+        doLoad.Value
+        #endif
+    let commits =
+        lazy
+        repo.Value
+        |> Repository.commits
+    let tags =
+        lazy
+        repo.Value
+        |> Repository.tags
+    let branches =
+        lazy
+        repo.Value
+        |> Repository.branches
+    /// All tags that are prescoped, or have been scoped
+    /// according to the config settings.
+    let scopedTags = lazy(
+        let scoper =
+            config.Value
+            |> GitNetConfig.autoScope
+            |> ValueOption.map(fun func -> func >> ValueSome)
+            |> ValueOption.defaultValue (fun _ -> ValueNone)
+        // query {
+        //     for tag in tags.Value do
+        //     
+        // }
+        )
+    let tagCollection = lazy(
+        5
+        )
+        
+    member this.Tags = tags.Value
+    member this.Branches = branches.Value
+    member this.Commits = commits.Value

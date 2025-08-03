@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="ConventionalCommits.fs" />
         <Compile Include="Types.fs" />
         <Compile Include="CommitCategorisation.fs" />
         <Compile Include="RepoCracker.fs" />
@@ -32,6 +31,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Partas.LibGit2Sharp.FSharp\Partas.LibGit2Sharp.FSharp.fsproj" />
+      <ProjectReference Include="..\Partas.Tools.ConventionalCommits\Partas.Tools.ConventionalCommits.fsproj" />
       <ProjectReference Include="..\Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" />
     </ItemGroup>
 

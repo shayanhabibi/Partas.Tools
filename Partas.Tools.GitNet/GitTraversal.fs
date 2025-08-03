@@ -1,5 +1,6 @@
 ﻿module Partas.Tools.GitNet.GitTraversal
 
+open Partas.Tools.GitNet.Types
 open System
 open System.Collections.Generic
 open System.Linq
@@ -9,6 +10,8 @@ open Partas.Tools.GitNet.RepoCracker
 open SepochSemver
 open LibGit2Sharp.FSharp
 open FSharp.Linq
+
+// Functions for exploring the Git tree.
 
 let tryParseSepochSemverFromTag (tag: LibGit2Sharp.Tag) =
     try
@@ -58,7 +61,7 @@ let getCommitsFromTag config repo tag =
             for commit in commits do
             groupValBy (tag, commit) ValueNone
         }
-    | ValueSome(CrackRepoResult(_,projects)) ->
+    | ValueSome({ Projects = projects }) ->
         query {
             for project in projects do
             for commit in commits do
@@ -181,3 +184,31 @@ let isFirstCommitForAuthor (authorSet: HashSet<string>) (commit: LibGit2Sharp.Co
 let getFirstCommitsForAuthor (authorSet: HashSet<string>) (commits: LibGit2Sharp.ICommitLog) =
     commits
     |> Seq.filter (isFirstCommitForAuthor authorSet)
+
+
+module Grouping =
+    open LibGit2Sharp
+    open FsToolkit.ErrorHandling
+    [<RequireQualifiedAccess>]
+    type CommitTagGrouping =
+        | Head of Tag
+        | Tag of Tag * Tag
+        | Tail of Tag
+    let getTagCollection repo =
+        let tags = repo |> Repository.tags
+        voption {
+            let! head =
+                tags |> Seq.tryHead
+            let! tail =
+                tags |> Seq.tryLast
+            return seq {
+                CommitTagGrouping.Head head
+                CommitTagGrouping.Tail tail
+                yield! tags |> Seq.pairwise |> Seq.map CommitTagGrouping.Tag
+            }
+        }
+    let getCommitsForTags config repo (tags: CommitTagGrouping seq) =
+        let commits = repo |> Repository.commits
+        
+        
+    
