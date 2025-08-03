@@ -22,6 +22,7 @@
 
     <ItemGroup>
         <Compile Include="Program.fs"/>
+        <Compile Include="Patterns.fs" />
         <None Include="README.md" Pack="true" PackagePath="\" >
             <Link>Public\README.md</Link>
         </None>

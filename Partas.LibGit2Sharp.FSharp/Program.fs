@@ -41,7 +41,18 @@ module Repository =
     let lookup lookupString = get _.Lookup(lookupString : string) >> ValueOption.ofObj
     let isValid = Repository.IsValid
     let discover = Repository.Discover
-    let describe commit = get _.Describe(commit)
+    /// <remarks>
+    /// Returns <c>ValueNone</c> if no annotated tag describing the commit
+    /// is found.
+    /// </remarks>
+    /// <summary>
+    /// Finds the most recent annotated tag that is reachable from a commit.
+    /// If the tag points to the commit, then only the tag is shown. Otherwise, it suffixes the tag name with the number of additional commits on top of the tagged object and the abbreviated object name of the most recent commit.
+    /// </summary>
+    /// <param name="commit"></param>
+    let describe commit =
+        try get _.Describe(commit) >> ValueSome
+        with e -> fun _ -> ValueNone
 [<RequireQualifiedAccess>]
 module ObjectDatabase =
     let inline private get func: ObjectDatabase -> 'T = func
@@ -71,7 +82,11 @@ module RepositoryInformation =
 module Commit =
     let inline private get (func: Commit -> 'T): Commit -> 'T = func
     let message: Commit -> string = get _.Message
+    /// <summary>
+    /// Alias for <c>MessageShort</c>
+    /// </summary>
     let subject: Commit -> string = get _.MessageShort
+    let messageShort = subject
     /// <summary>
     /// Is lazy loaded, and can throw an exception if the commit no longer exists.
     /// </summary>
@@ -90,7 +105,11 @@ module Commit =
     let isMissing: Commit -> bool = get _.IsMissing
     let notes: Commit -> seq<Note> = get _.Notes
     let prettifyMessage: Commit -> string = message >> fun msg -> Commit.PrettifyMessage(msg, '#')
+    /// <summary>
+    /// Alias for <c>Sha</c>
+    /// </summary>
     let hash: Commit -> string = get _.Sha
+    let sha: Commit -> string = get _.Sha
     let tree: Commit -> Tree = get _.Tree
     let id: Commit -> ObjectId = get _.Id
     let getTreeItem path = get _.Item(path) >> ValueOption.ofObj
@@ -130,6 +149,7 @@ module Tag =
     let isAnnotated: Tag -> bool = get _.IsAnnotated
     let annotation: Tag -> TagAnnotation voption = get _.Annotation >> ValueOption.ofObj
     let peeled: Tag -> GitObject = get _.PeeledTarget
+    let target: Tag -> GitObject = get _.Target
 [<RequireQualifiedAccess>]
 module TagAnnotation =
     let inline private get func: TagAnnotation -> 'T = func
@@ -320,7 +340,7 @@ module Network =
 [<RequireQualifiedAccess>]
 module CommitFilter =
     let inline private get func: CommitFilter -> 'T = func
-    let init = CommitFilter()
+    let init () = CommitFilter()
     module Get =
         let excludeReachableFrom = get _.ExcludeReachableFrom >> ValueOption.ofObj >> unbox<GitObject voption>
         let since = excludeReachableFrom
@@ -341,9 +361,9 @@ module CommitFilter =
     /// Initialises a commit filter for common patterns
     /// </summary>
     module Common =
-        let between since until = init |> excludeReachableFrom since |> includeReachableFrom until
-        let until until = init |> includeReachableFrom until
-        let since since = init |> excludeReachableFrom since
+        let between since until = init() |> excludeReachableFrom since |> includeReachableFrom until
+        let until until = init() |> includeReachableFrom until
+        let since since = init() |> excludeReachableFrom since
 [<RequireQualifiedAccess>]
 module CommitLog =
     let inline private get func: CommitLog -> 'T = func
@@ -376,7 +396,7 @@ module CommitSortStrategies =
 [<RequireQualifiedAccess>]
 module DescribeOptions =
     let inline private get func: DescribeOptions -> 'T = func
-    let init = DescribeOptions()
+    let init () = DescribeOptions()
     let alwaysRenderLongFormat options = (options: DescribeOptions).AlwaysRenderLongFormat <- true
     let neverRenderLongFormat options = (options: DescribeOptions).AlwaysRenderLongFormat <- false
     let minCommitIdAbbrevLen length options = (options: DescribeOptions).MinimumCommitIdAbbreviatedSize <- length
@@ -423,3 +443,34 @@ module TreeChanges =
     let hashCode: TreeChanges -> int = get _.GetHashCode()
     let enumerate: TreeChanges -> System.Collections.Generic.IEnumerator<TreeEntryChanges> = get _.GetEnumerator()
     let dispose: TreeChanges -> unit = get _.Dispose()
+
+[<RequireQualifiedAccess>]
+module Remote =
+    let inline private get func: Remote -> 'T = func
+    let isAutomaticallyPruneOnFetch: Remote -> bool = get _.AutomaticallyPruneOnFetch
+    let fetchRefSpecs: Remote -> seq<RefSpec> = get _.FetchRefSpecs
+    let name: Remote -> string = get _.Name
+    let pushRefSpecs: Remote -> seq<RefSpec> = get _.PushRefSpecs
+    let pushUrl: Remote -> string = get _.PushUrl
+    let tagFetchMode: Remote -> TagFetchMode = get _.TagFetchMode
+    let url: Remote -> string = get _.Url
+    let dispose: Remote -> unit = get _.Dispose()
+    let hashCode: Remote -> int = get _.GetHashCode()
+    let isValidName = Remote.IsValidName
+
+[<RequireQualifiedAccess>]
+module GitObjectMetadata =
+    let inline private get func: GitObjectMetadata -> 'T = func
+    let typ = get _.Type
+    let size = get _.Size
+    let isCommit = typ >> _.HasFlag(ObjectType.Commit)
+    let isBlob = typ >> _.HasFlag(ObjectType.Blob)
+    let isTree = typ >> _.HasFlag(ObjectType.Tree)
+    let isTag = typ >> _.HasFlag(ObjectType.Tag)
+    let getFlags o =
+        [
+            if isCommit o then ObjectType.Commit
+            if isBlob o then ObjectType.Blob
+            if isTree o then ObjectType.Tree
+            if isTag o then ObjectType.Tag
+        ]

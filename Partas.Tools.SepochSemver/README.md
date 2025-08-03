@@ -7,7 +7,7 @@ disambiguating tags for SemVer packages in a monorepo.
 
 ### Semver
 
-Semver spec follows the SemVer 2.0 spec and uses the [NuGet `Semver` package].
+Semver spec follows the SemVer 2.0 spec and uses the [NuGet `Semver` package](https://semver-nuget.org/).
 
 ### Sepoch - Scoped Epoch
 
@@ -67,9 +67,9 @@ type SepochSemver = {
 - [Semver] for Semver parsing
 - [Fake.Core.Strings] for string helpers
 
-[XParsec]:[https://github.com/roboz0r/XParsec]
-[Semver]:[https://semver-nuget.org/]
-[Fake.Core.Strings]:[https://fake.build/]
+[XParsec]:https://github.com/roboz0r/XParsec
+[Semver]:https://semver-nuget.org/
+[Fake.Core.Strings]:https://fake.build/
 
 ---
 

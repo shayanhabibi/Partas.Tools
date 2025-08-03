@@ -17,6 +17,7 @@ type CrackedProject = {
     ProjectDirectory: string
     ProjectFileName: string
     SourceFiles: string list
+    AssemblyFile: string voption
     Scope: string voption
     Epoch: string voption
 }
@@ -63,6 +64,11 @@ module private Projects =
     
     let tryGetScope: MSBuildProject -> string voption = extractElementValue "GitNetScope"
     let tryGetEpoch: MSBuildProject -> string voption = extractElementValue "GitNetEpoch"
+    let tryGetTitle project: string voption =
+        extractElementValue "Title" project
+        |> ValueOption.orElse (extractElementValue "PackageId" project)
+
+type CrackRepoResult = CrackRepoResult of repoDir: string * CrackedProject seq
 
 let crackRepo (config: GitNetConfig) = voption {
     let! repoDir = Repo.getPath config
@@ -73,18 +79,33 @@ let crackRepo (config: GitNetConfig) = voption {
     let makeCrackedProj (proj: MSBuildProject, path: string) =
         let projectDirectory = path |> projectDirectory
         let relativeToRepo = relativeToRepoFromProject projectDirectory
+        let sourceFiles = proj |> Projects.getSourceFiles |> Seq.toList
         {
             CrackedProject.ProjectDirectory = projectDirectory |> relativeToRepo
             ProjectFileName = path |> relativeToRepo
-            SourceFiles =
-                proj
-                |> Projects.getSourceFiles
-                |> Seq.toList
-            Scope = proj |> Projects.tryGetScope
+            SourceFiles = sourceFiles
+            AssemblyFile =
+                sourceFiles
+                |> Seq.tryFind
+                    (fun path ->
+                    let path = Path.GetFileName path
+                    path = "AssemblyFile.fs"
+                    || path = "AssemblyInfo.fs"
+                    )
+                |> ValueOption.ofOption
+            Scope =
+                match config.ProjectConfig.AutoScope with
+                | NoScoping -> ValueNone
+                | Default -> proj |> Projects.tryGetScope
+                | Transform transformer ->
+                    proj |> Projects.tryGetTitle
+                    |> ValueOption.orElse (path |> Path.GetFileNameWithoutExtension |> ValueSome)
+                    |> ValueOption.map transformer
             Epoch = proj |> Projects.tryGetEpoch
         }
     return
-        repoDir,
-        Projects.findProjectsAndLoad repoDir
-        |> Seq.map makeCrackedProj
+        CrackRepoResult
+        (repoDir,
+         Projects.findProjectsAndLoad repoDir
+         |> Seq.map makeCrackedProj)
 }

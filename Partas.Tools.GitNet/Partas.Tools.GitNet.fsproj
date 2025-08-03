@@ -6,11 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Types.fs" />
-        <Compile Include="LibGit2Sharp.fs" />
         <Compile Include="ConventionalCommits.fs" />
+        <Compile Include="Types.fs" />
         <Compile Include="CommitCategorisation.fs" />
         <Compile Include="RepoCracker.fs" />
+        <Compile Include="GitHubLinkParser.fs" />
+        <Compile Include="MarkdownWriter.fs" />
+        <Compile Include="GitTraversal.fs" />
+        <Compile Include="Action.fs" />
         <Compile Include="Program.fs"/>
         <Content Include="README.md" />
     </ItemGroup>
@@ -20,6 +23,7 @@
       <PackageReference Include="Fake.DotNet.AssemblyInfoFile" Version="6.1.3" />
       <PackageReference Include="Fake.DotNet.MSBuild" Version="6.1.3" />
       <PackageReference Include="Fake.IO.FileSystem" Version="6.1.3" />
+      <PackageReference Include="FSharp.Formatting" Version="21.0.0-beta-005" />
       <PackageReference Include="FsToolkit.ErrorHandling" Version="5.0.1" />
       <PackageReference Include="LibGit2Sharp" Version="0.31.0" />
       <PackageReference Include="Semver" Version="3.0.0" />
@@ -27,6 +31,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Partas.LibGit2Sharp.FSharp\Partas.LibGit2Sharp.FSharp.fsproj" />
       <ProjectReference Include="..\Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" />
     </ItemGroup>
 
