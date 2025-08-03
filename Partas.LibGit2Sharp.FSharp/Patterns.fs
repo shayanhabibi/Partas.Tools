@@ -22,7 +22,17 @@ module TreeEntry =
 
 [<RequireQualifiedAccess>]
 module Branch =
-    let (|IsHead|IsRemote|IsTracking|) = function
-        | branch when Branch.isHead branch -> IsHead
-        | branch when Branch.isRemote branch -> IsRemote
-        | branch when Branch.isTracking branch -> IsTracking
+    [<return: Struct>]
+    let (|IsHead|_|) = function
+        | branch when Branch.isHead branch -> ValueSome ()
+        | _ -> ValueNone
+    
+    [<return: Struct>]
+    let (|IsRemote|_|) = function
+        | branch when Branch.isRemote branch -> ValueSome ()
+        | _ -> ValueNone
+    
+    [<return: Struct>]
+    let (|IsTracking|_|) = function
+        | branch when Branch.isTracking branch -> ValueSome ()
+        | _ -> ValueNone
