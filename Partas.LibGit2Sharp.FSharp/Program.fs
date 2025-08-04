@@ -94,11 +94,11 @@ module Commit =
     /// <summary>
     /// Prevents exceptions if the commit does not exist anymore.
     /// </summary>
-    let parents: Commit -> seq<Commit> voption =
+    let parents commit: seq<Commit> voption =
         try
-        get _.Parents >> ValueOption.ofObj
+        get _.Parents commit |> ValueOption.ofObj
         with e ->
-            fun _ -> ValueNone
+            ValueNone
     let author: Commit -> Signature = get _.Author
     let committer: Commit -> Signature = get _.Committer
     let encoding: Commit -> string = get _.Encoding
@@ -161,10 +161,10 @@ module TagAnnotation =
     let target: TagAnnotation -> GitObject = get _.Target
     let tagger: TagAnnotation -> Signature = get _.Tagger
     let hashCode: TagAnnotation -> int = get _.GetHashCode()
-    let peel<'T when 'T :> GitObject> =
+    let peel<'T when 'T :> GitObject> tag =
         try
-        get _.Peel<'T>() >> ValueSome
-        with e -> fun _ -> ValueNone
+        get _.Peel<'T>() tag |> ValueSome
+        with e -> ValueNone
     let unsafePeel<'T when 'T :> GitObject> = get _.Peel<'T>()
 [<RequireQualifiedAccess>]
 module Signature =
@@ -225,28 +225,28 @@ module Blob =
     /// <summary>
     /// Wraps the operation with a <c>try ... with</c>
     /// </summary>
-    let isBinary: Blob -> bool voption =
+    let isBinary blob: bool voption =
         try
-        get _.IsBinary >> ValueSome
-        with e -> fun _ -> ValueNone
+        get _.IsBinary blob |> ValueSome
+        with e -> ValueNone
     let unsafeIsBinary: Blob -> bool = _.IsBinary
     /// <summary>
     /// Wraps the operation with a <c>try ... with</c>
     /// </summary>
-    let size: Blob -> int64 voption =
-        try get _.Size >> ValueSome with e -> fun _ -> ValueNone
+    let size blob: int64 voption =
+        try get _.Size blob |> ValueSome with e -> ValueNone
     let unsafeSize: Blob -> int64 = get _.Size
     let hashCode: Blob -> int = get _.GetHashCode()
-    let peel<'T when 'T :> GitObject> =
-        try get _.Peel<'T>() >> ValueSome with e -> fun _ -> ValueNone
+    let peel<'T when 'T :> GitObject> blob =
+        try get _.Peel<'T>() blob |> ValueSome with e -> ValueNone
     let unsafePeel<'T when 'T :> GitObject> = get _.Peel<'T>()
     let unsafeContentStream filteringOptions =
         get _.GetContentStream(filteringOptions)
-    let contentStream filteringOptions =
-        try unsafeContentStream filteringOptions >> ValueSome with _ -> fun _ -> ValueNone
+    let contentStream filteringOptions blob =
+        try unsafeContentStream filteringOptions blob |> ValueSome with _ -> ValueNone
     let unsafeContentText: Blob -> string = get _.GetContentText()
-    let contentText: Blob -> string voption =
-        try unsafeContentText >> ValueSome with _ -> fun _ -> ValueNone
+    let contentText blob: string voption =
+        try unsafeContentText blob |> ValueSome with _ -> ValueNone
 [<RequireQualifiedAccess>]
 module GitLink =
     let inline private get func: GitLink -> 'T = func
@@ -255,8 +255,8 @@ module GitLink =
     let id: GitLink -> ObjectId = get _.Id
     let hashCode: GitLink -> int = get _.GetHashCode()
     let unsafePeel<'T when 'T :> GitObject> = get _.Peel<'T>()
-    let peel<'T when 'T :> GitObject> =
-        try unsafePeel<'T> >> ValueSome with _ -> fun _ -> ValueNone
+    let peel<'T when 'T :> GitObject> gitLink =
+        try unsafePeel<'T> gitLink |> ValueSome with _ -> ValueNone
 [<RequireQualifiedAccess>]
 module Note =
     let inline private get func: Note -> 'T = func
@@ -278,8 +278,11 @@ module GitObject =
     let isMissing: GitObject -> bool = get _.IsMissing
     let id: GitObject -> ObjectId = get _.Id
     let unsafePeel<'T when 'T :> GitObject> = get _.Peel<'T>()
-    let peel<'T when 'T :> GitObject> =
-        try unsafePeel<'T> >> ValueSome with _ -> fun _ -> ValueNone
+    let peel<'T when 'T :> GitObject> gitObj =
+        try
+            unsafePeel<'T> gitObj
+            |> ValueSome
+        with _ -> ValueNone
     let hashCode: GitObject -> int = get _.GetHashCode()
 [<RequireQualifiedAccess>]
 module Index =
@@ -328,15 +331,15 @@ module Network =
     let listRefsForRemote remote =
         get _.ListReferences(remote: Remote) >> ValueOption.ofObj
     let fetch refSpecs path = get _.Fetch(path, refSpecs)
-    let pushBranch branch =
-        try get _.Push(branch: Branch) >> Ok
-        with :? LibGit2SharpException as e -> fun _ -> Error e
-    let pushBranches branches =
-        try get _.Push(branches: Branch seq) >> Ok
-        with :? LibGit2SharpException as e -> fun _ -> Error e
-    let pushBranchWith (options: PushOptions) (branch: Branch) =
-        try get _.Push(branch, options) >> Ok
-        with :? LibGit2SharpException as e -> fun _ -> Error e
+    let pushBranch branch  network=
+        try get _.Push(branch: Branch) network |> Ok
+        with :? LibGit2SharpException as e -> Error e
+    let pushBranches branches  network=
+        try get _.Push(branches: Branch seq) network |> Ok
+        with :? LibGit2SharpException as e -> Error e
+    let pushBranchWith (options: PushOptions) (branch: Branch) network =
+        try get _.Push(branch, options) network |> Ok
+        with :? LibGit2SharpException as e -> Error e
 [<RequireQualifiedAccess>]
 module CommitFilter =
     let inline private get func: CommitFilter -> 'T = func
@@ -474,3 +477,25 @@ module GitObjectMetadata =
             if isTree o then ObjectType.Tree
             if isTag o then ObjectType.Tag
         ]
+/// <summary>
+/// Note that the <c>Diff</c> methods are numerous and accept different types.<br/>
+/// You can expect just a few common comparisons and helpers here.
+/// </summary>
+[<RequireQualifiedAccess>]
+module Diff =
+    let inline private get func: Diff -> 'T = func
+    module Tree =
+        let compare<'ChangeType
+            when 'ChangeType: not struct and 'ChangeType :> IDiffResult
+            > (old: Tree) (newTree: Tree) = get _.Compare<'ChangeType>(old, newTree)
+        let compareWith<'ChangeType
+            when 'ChangeType: not struct and 'ChangeType :> IDiffResult
+            > (options: CompareOptions) (old: Tree) (newTree: Tree) = get _.Compare<'ChangeType>(old,newTree,options)
+    module Commit =
+        let compare<'ChangeType
+            when 'ChangeType: not struct and 'ChangeType :> IDiffResult
+            > (old: Commit) (newCommit: Commit) = get _.Compare<'ChangeType>(old.Tree, newCommit.Tree)
+        let compareWith<'ChangeType
+            when 'ChangeType: not struct and 'ChangeType :> IDiffResult
+            > (options: CompareOptions) (old: Commit) (newCommit: Commit) = get _.Compare<'ChangeType>(old.Tree,newCommit.Tree,options)
+            

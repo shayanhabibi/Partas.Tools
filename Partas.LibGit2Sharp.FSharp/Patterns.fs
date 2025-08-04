@@ -17,8 +17,13 @@ module GitObject =
 
 [<RequireQualifiedAccess>]
 module TreeEntry =
-    let (|IsBlob|IsTree|IsLink|) treeEntry =
-        treeEntry |> TreeEntry.getTarget
+    let inline private isTyp<'T when 'T :> GitObject>: TreeEntry -> 'T voption = TreeEntry.target >> GitObject.peel<'T>
+    [<return: Struct>]
+    let (|IsBlob|_|): TreeEntry -> Blob voption = isTyp<Blob>
+    [<return: Struct>]
+    let (|IsTree|_|): TreeEntry -> Tree voption = isTyp<Tree>
+    [<return: Struct>]
+    let (|IsLink|_|): TreeEntry -> GitLink voption = isTyp<GitLink>
 
 [<RequireQualifiedAccess>]
 module Branch =
