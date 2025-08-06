@@ -1,6 +1,6 @@
 ﻿module Partas.Tools.GitNet.CommitCategorisation
 
-open ConventionalCommits.Types
+open Partas.Tools.ConventionalCommits
 open Partas.Tools.GitNet.Types
 
 // Categorisation for Conventional Commits, or using XParsec.

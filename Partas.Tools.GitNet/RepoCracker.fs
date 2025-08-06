@@ -76,7 +76,10 @@ let crackRepo (config: GitNetConfig) = voption {
         let relativeToRepo = relativeToRepoFromProject projectDirectory
         let sourceFiles = proj |> Projects.getSourceFiles |> Seq.toList
         {
-            CrackedProject.ProjectDirectory = projectDirectory |> relativeToRepo
+            CrackedProject.ProjectDirectory =
+                projectDirectory
+                |> relativeToRepo
+                |> String.replace "\\" "/"
             ProjectFileName = path |> relativeToRepo
             SourceFiles = sourceFiles
             AssemblyFile =

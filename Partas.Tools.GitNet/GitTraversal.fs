@@ -1,8 +1,7 @@
 ﻿module Partas.Tools.GitNet.GitTraversal
 
+open Fake.IO
 open Partas.Tools.GitNet.Types
-open System
-open System.Collections.Generic
 open System.Linq
 open Microsoft.FSharp.Linq.RuntimeHelpers
 open Partas.Tools
@@ -10,6 +9,8 @@ open Partas.Tools.GitNet.RepoCracker
 open SepochSemver
 open LibGit2Sharp.FSharp
 open FSharp.Linq
+open System
+open System.Collections.Generic
 
 // Functions for exploring the Git tree.
 
@@ -30,7 +31,7 @@ let getTagCollection repo =
         groupValBy (_tag,sepoch) sepoch.Sepoch.GetScope
     }
 [<AutoOpen>]
-module private Helpers =
+module internal Helpers =
     let private getCommitsAfter repo o =
         Repository.commits repo
         |> CommitLog.Query.until o
@@ -66,9 +67,8 @@ let getCommitsFromTag config repo tag =
             for project in projects do
             for commit in commits do
             where (
-                commit
-                |> Commit.getTreeItem project.ProjectDirectory
-                |> _.IsSome
+                repo.Diff.Compare<TreeChanges>(commit.Tree, DiffTargets.Index, [ project.ProjectDirectory ])
+                |> Seq.isEmpty |> not
             )
             groupValBy (tag, commit) project.Scope
         }
@@ -209,6 +209,27 @@ module Grouping =
         }
     let getCommitsForTags config repo (tags: CommitTagGrouping seq) =
         let commits = repo |> Repository.commits
+        ()
         
-        
-    
+module Diff =
+    let inline private diffCompareWithPathOptions (item: 'T) paths options = Repository.diff >> _.Compare<TreeChanges>(item, DiffTargets.Index, paths, options)
+    let inline private diffCompareWithPaths (item: 'T) paths = Repository.diff >> _.Compare<TreeChanges>(item, DiffTargets.Index, paths)
+    let inline private diffCompare (item: 'T)= Repository.diff >> _.Compare<TreeChanges>(item, DiffTargets.Index)
+    let commit repo commit =
+        let tree = commit |> Commit.tree
+        repo |> diffCompare tree
+    let tree repo tree = repo |> diffCompare tree
+    let commitPaths repo paths commit =
+        let tree = commit |> Commit.tree
+        repo |> diffCompareWithPaths tree paths
+    let commitPathsWith repo paths (handler: string -> unit) commit =
+        let tree = commit |> Commit.tree
+        repo
+        |> diffCompareWithPathOptions
+            tree
+            paths
+            (ExplicitPathsOptions(OnUnmatchedPath = handler))
+    let treePaths repo paths tree =
+        repo |> diffCompareWithPaths tree paths
+    let treePathsWith repo paths handler tree =
+        repo |> diffCompareWithPathOptions tree paths (ExplicitPathsOptions(OnUnmatchedPath = handler))

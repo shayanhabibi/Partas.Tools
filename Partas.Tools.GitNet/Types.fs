@@ -1,8 +1,22 @@
 ﻿module Partas.Tools.GitNet.Types
 
+open Partas.Tools.ConventionalCommits
 open Fake.Core
+open Partas.Tools.SepochSemver
 
-type ParsedCommit = ConventionalCommits.Types.ParsedCommit
+[<AutoOpen>]
+module Aliases =
+    type DiffTargets = LibGit2Sharp.DiffTargets
+    type ExplicitPathsOptions = LibGit2Sharp.ExplicitPathsOptions
+    type TreeChanges = LibGit2Sharp.TreeChanges
+
+[<RequireQualifiedAccess>]
+type BumpType =
+    | Patch
+    | Minor
+    | Major
+    | Epoch of string
+
 type GitNetCommit = {
     ParsedCommit: ParsedCommit
     Original: LibGit2Sharp.Commit
@@ -123,6 +137,12 @@ type SemverConfig = {
 
 type AutoScopeType =
     | NoScoping
+    /// <summary>
+    /// The autoscoper is applied to project names and determines
+    /// whether that project should be within a scope or not.
+    /// Scoped projects do not get included in other tags.
+    /// </summary>
+    /// <param name="transformer"></param>
     | Transform of transformer: (string -> string)
 
 type ProjectConfig = {
@@ -191,60 +211,3 @@ module GitNetConfig =
             | Transform transformer -> ValueSome transformer
             | NoScoping -> ValueNone
 
-open LibGit2Sharp.FSharp
-// ========= Workers
-type GitNetRuntime(?config: GitNetConfig) =
-    let config =
-        lazy
-        #if DEBUG
-        if config.IsNone then
-            Trace.log "GitNet running with default configuration."
-        #endif
-        defaultArg config GitNetConfig.init
-    let repo =
-        lazy
-        let doLoad =
-             lazy
-             config.Value.RepositoryPath
-             |> Repository.load
-        #if DEBUG
-        Trace.log $"GitNet loading repository from path: %s{config.Value.RepositoryPath}"
-        try
-        doLoad.Value
-        with e -> failwith $"GitNet must be run from, or given a valid repository directory through creating the GitNetRuntime\
-                            with a config that has RepositoryPath set correctly.\nException: {e}"
-        #else
-        doLoad.Value
-        #endif
-    let commits =
-        lazy
-        repo.Value
-        |> Repository.commits
-    let tags =
-        lazy
-        repo.Value
-        |> Repository.tags
-    let branches =
-        lazy
-        repo.Value
-        |> Repository.branches
-    /// All tags that are prescoped, or have been scoped
-    /// according to the config settings.
-    let scopedTags = lazy(
-        let scoper =
-            config.Value
-            |> GitNetConfig.autoScope
-            |> ValueOption.map(fun func -> func >> ValueSome)
-            |> ValueOption.defaultValue (fun _ -> ValueNone)
-        // query {
-        //     for tag in tags.Value do
-        //     
-        // }
-        )
-    let tagCollection = lazy(
-        5
-        )
-        
-    member this.Tags = tags.Value
-    member this.Branches = branches.Value
-    member this.Commits = commits.Value

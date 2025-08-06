@@ -4,7 +4,7 @@ open System
 open System.Collections.Generic
 open System.Linq
 open GitTraversal
-open ConventionalCommits
+open Partas.Tools.ConventionalCommits
 open Partas.Tools
 open RepoCracker
 open Fake.Core
@@ -51,7 +51,7 @@ module internal Helpers =
             remote.Url
 
 let parseCommit (input: LibGit2Sharp.Commit) =
-    let parsed = parseCommit input.Message
+    let parsed = ConventionalCommit.parse input.Message
     {
         ParsedCommit = parsed
         Original = input
