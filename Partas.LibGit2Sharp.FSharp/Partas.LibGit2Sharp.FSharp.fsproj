@@ -12,9 +12,9 @@
         <PackageTags>Partas;LibGit2Sharp;Wrapper;F#;FSharp</PackageTags>
         <Authors>Shayan Habibi</Authors>
         <Copyright>Copyright (c) Shayan Habibi 2025</Copyright>
-        <Version>0.2.0</Version>
-        <PackageVersion>0.2.0</PackageVersion>
-        <PackageReleaseNotes>CommitFilter and DescribeOptions init functions take a unit parameter to force initialisation of a new object.</PackageReleaseNotes>
+        <Version>0.2.1</Version>
+        <PackageVersion>0.2.1</PackageVersion>
+        <PackageReleaseNotes>Wrappers around LibGit2Sharp Exceptions work as intended.</PackageReleaseNotes>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <PackageIcon>Partas_d00b_00a icon.png</PackageIcon>
