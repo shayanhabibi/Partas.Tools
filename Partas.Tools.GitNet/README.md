@@ -31,3 +31,86 @@ I will begin by adding an extra qualifier for tags in a binding monorepo to disa
 ```
 
 In this way parsing is not difficult. Major is determined by parsing the first numeric character.
+
+### Repository Specs
+
+Any git repository.
+
+FSharp projects to use autoscoping features.
+
+Project directories must be consistent. For this reason, a structured start with projects contained within a src directory
+is suggested.
+
+FSharp project files should not be removed.
+
+All repository files are immediately contained within the working directory of the repository.
+
+## Configuration
+
+There are defaults that are used if no configuration is provided.
+
+Most steps of the process can be configured by altering the config
+record.
+
+## Architecture
+
+1. Repository is loaded
+   1. If there is ambiguity, then the author needs to target a more specific path
+2. Projects are loaded
+   1. Apply function to filter projects
+   2. Apply function to filter projects paths if excluded
+   3. Apply function to autoscope projects
+3. Collect all tags
+   1. Apply tag filter
+   2. Apply tag modifier
+4. Collect commit log
+   1. Apply preliminary commit filter
+5. Group commits by scopes
+6. Filter commit scopes by tag
+
+Exceptions can be thrown:
+1. When loading the repository
+   - No repository found
+   - Some LibGit2Sharp exception is thrown
+2. When loading the projects
+   - Some exception thrown when parsing/loading the projects
+   - Some exception thrown when applying the autoscoper
+3. When collecting the tags
+   - Some exception thrown when loading the tags
+4. When collecting the commit log
+   - Some exception thrown when loading the commits
+
+## Tags
+
+SepochSemver tags are used for categorisation of commits. None-SepochSemver
+compatible tags are ignored.
+
+In the case that a non-semver tag would have been found between two semver
+tags, the commits are categorised as if that tag did not separate them.
+
+When utilising scopes, then all non-scoped tags are attributed to
+all scopes. They therefor serve as bounds for commits within that scope.
+
+In the scenario that there exists a scoped tag, then that tag only
+serves as a boundary point for the commits of that scope.
+
+In the scenario that there exists a scoped tag between two non scoped tags
+for a scoped project, then the scoped tag continues to serve as a boundary.
+
+### Collection
+
+Collection is therefore to be interpreted as follows:
+
+Collect all commits for a repository and distribute them into their scopes
+along a chronological order.
+
+Collect all tags and, the commits that fall between each, along
+their chronological order.
+
+All non-scoped tags are given 'illusory' scopes, such that each scope
+has a matching tag.
+
+The tag 'boundaries' that are unoccupied within a scope, are ignored.
+The blocks that remain, will continue as delineated blocks until
+the commits are resolved.
+

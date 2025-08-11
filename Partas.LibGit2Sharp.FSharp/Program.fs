@@ -498,4 +498,16 @@ module Diff =
         let compareWith<'ChangeType
             when 'ChangeType: not struct and 'ChangeType :> IDiffResult
             > (options: CompareOptions) (old: Commit) (newCommit: Commit) = get _.Compare<'ChangeType>(old.Tree,newCommit.Tree,options)
-            
+
+[<RequireQualifiedAccess>]
+module TreeEntryChanges =
+    let inline private get func: TreeEntryChanges -> 'T = func
+    let exists: TreeEntryChanges -> bool = get _.Exists
+    let mode: TreeEntryChanges -> Mode = get _.Mode
+    let oid: TreeEntryChanges -> ObjectId = get _.Oid
+    let path: TreeEntryChanges -> string = get _.Path
+    let status: TreeEntryChanges -> ChangeKind = get _.Status
+    let oldExists: TreeEntryChanges -> bool = get _.OldExists
+    let oldMode: TreeEntryChanges -> Mode = get _.OldMode
+    let oldOid: TreeEntryChanges -> ObjectId = get _.OldOid
+    let oldPath: TreeEntryChanges -> string = get _.OldPath

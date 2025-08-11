@@ -5,6 +5,17 @@ open Partas.Tools.GitNet.Types
 
 // Categorisation for Conventional Commits, or using XParsec.
 
+module Footer =
+    let getValueForKey key = function
+        | ParsedCommit.Unconventional _ -> ValueNone
+        | ParsedCommit.Breaking { Footers = footers }
+        | ParsedCommit.Conventional { Footers = footers } ->
+            footers
+            |> List.map _.Destructure
+            |> List.find (fst >> (=) key)
+            |> snd
+            |> ValueSome
+    let containsKey key = getValueForKey key >> _.IsSome
 
 
 [<AutoOpen>]
@@ -46,7 +57,10 @@ let willBump (config: GitNetConfig) =
     function
     | Conventional { Footers = footers } | Breaking { Footers = footers }
         when footerContainsEpoch footers |> _.IsSome ->
-        footerContainsEpoch footers |> _.Value |> BumpType.Epoch |> ValueSome
+        footerContainsEpoch footers
+        |> _.Value
+        |> BumpType.Epoch
+        |> ValueSome
     | Conventional { Type = typ } ->
         let orElse func = ValueOption.orElse (func typ)
         isMajor typ
