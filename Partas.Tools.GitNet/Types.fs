@@ -1,5 +1,9 @@
 ﻿module Partas.Tools.GitNet.Types
 
+open System
+open System.Collections.Frozen
+open System.Collections.Generic
+open System.Collections.Immutable
 open Partas.Tools.ConventionalCommits
 open Fake.Core
 open Partas.Tools.SepochSemver
@@ -37,11 +41,9 @@ type GitNetCommit = {
     Original: LibGit2Sharp.Commit
 }
 
-
-
 // ========== Projects
 /// <summary>
-/// Container type for the returned details of a parsed &/or (Discovered)
+/// Container type for the returned details of a parsed &amp;/or (Discovered)
 /// project.
 /// </summary>
 /// <remarks>

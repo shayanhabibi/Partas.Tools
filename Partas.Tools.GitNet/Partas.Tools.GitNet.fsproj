@@ -13,7 +13,7 @@
         <Compile Include="MarkdownWriter.fs" />
         <Compile Include="GitTraversal.fs" />
         <Compile Include="GitHub.fs" />
-        <Compile Include="GitCollector.fs" />
+        <Compile Include="GitCollection.fs" />
         <Compile Include="Renderer.fs" />
         <Compile Include="Program.fs" />
         <Content Include="README.md" />

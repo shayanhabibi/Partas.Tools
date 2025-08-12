@@ -1,8 +1,8 @@
 ﻿open System.Linq
+open Partas.Tools.GitNet
 open Partas.Tools.GitNet.GitHubLinkParser
 open Partas.Tools.GitNet.GitTraversal
 open Partas.Tools.GitNet.RepoCracker
-open Partas.Tools.GitNet.GitCollector
 open Partas.Tools.GitNet.Types
 open Partas.Tools.SepochSemver
 open LibGit2Sharp
@@ -11,12 +11,11 @@ open FSharp.Linq
 
 
 
-
+open GitCollection
 [<EntryPoint>]
 let main args =
-    let path = @"/Users/leonielott/RiderProjects/Partas.Solid/"
     // let path = @"C:\Users\shaya\RiderProjects\Partas.Fake.Tools.GitCliff\"
-    // let path = @"C:\Users\shaya\RiderProjects\Partas.Solid.Plugin\"
+    let path = @"C:\Users\shaya\RiderProjects\Partas.Solid.Plugin\"
     let repo = Repository.load path
 
     {
@@ -29,8 +28,11 @@ let main args =
                         AutoScope = AutoScopeType.Transform (fun inp ->
                             inp.Split('.').Last())
                 }
-    } |> fun config ->
-        computeGitNetCollections(config).Collection
+    }
+    |> fun config ->
+        // computeGitNetCollections(config).Collection
+        TagCommitCollection.load config
+        |> TagCommitCollection.collectScopes repo
         |> Seq.iter (printfn "%A")
     repo
     |> Repository.tags
