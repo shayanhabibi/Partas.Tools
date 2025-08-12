@@ -226,40 +226,7 @@ type TagCommitCollection =
         Scopes: FrozenDictionary<Scope, string>
         CommitScopes: FrozenDictionary<CommitSha, Scope FrozenSet>
     }
-    member inline this.OrderedTagShas = this.TagCollection.OrderedKeys
-    member this.Item(sha: TagSha) =
-        this.TagCommits[sha]
-    member this.ItemOption(sha: TagSha voption) =
-        match sha with
-        | ValueSome sha -> this[sha]
-        | ValueNone -> this.UntaggedCommits
-    member this.FindIndexes(item1,item2) =
-        let mutable idx1 = ValueNone
-        let mutable idx2 = ValueNone
-        let mutable idx = 0
-        let length = this.OrderedTagShas.Length
-        while idx < length && (idx1.IsNone || idx2.IsNone) do
-            let current = &this.OrderedTagShas[idx]
-            if current = item1 then
-                idx1 <- ValueSome idx
-            elif current = item2 then
-                idx2 <- ValueSome idx
-            idx <- idx + 1
-        idx1,idx2
-    member this.UnsafeFindIndexes(item1, item2) =
-        let idx1,idx2 = this.FindIndexes(item1,item2)
-        (idx1.Value,idx2.Value)
-    member private this.SliceTags(lowerIdx: int, higherIdx: int, ?capacity: int) =
-        let capacity = defaultArg capacity 100
-        let shas = this.OrderedTagShas[lowerIdx..higherIdx].AsSpan()
-        let collection = HashSet(capacity)
-        for sha in shas do
-            collection.UnionWith(this.TagCommits[sha])
-        collection
-    member this.Slice(lowerBounds: TagSha, upperBounds: TagSha) =
-        let lowerIdx,higherIdx = this.UnsafeFindIndexes(lowerBounds,upperBounds)
-        this.SliceTags(lowerIdx,higherIdx)
-        |> toFrozenSet
+
 module TagCommitCollection =
     type ScopePathDictionary = FrozenDictionary<Scope, string>
     let load config =
@@ -292,9 +259,8 @@ module TagCommitCollection =
             Scopes = scopes
             CommitScopes = commitScopes
         }
-    let inline private tagLookup sha = _.TagCollection.KeyDictionary[sha]
-    let inline private tagCommitLookup sha = _.TagCommits[sha]
     let inline private sliceTagsIndexImpl lowerIdx higherIdx collection=
+        let inline tagCommitLookup sha = _.TagCommits[sha]
         let shas =
             collection.TagCollection.OrderedKeys[lowerIdx..higherIdx].AsSpan()
         let shaCollection = HashSet(20)
