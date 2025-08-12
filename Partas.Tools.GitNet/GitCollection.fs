@@ -181,7 +181,7 @@ module CommitTreeChangeCollection =
                 let key = sha
                 let value = sha |> commits.Get |> Diff.commit repo
                 key,value
-            | Choice1Of2 (newSha,oldSha) ->
+            | Choice1Of2 (oldSha,newSha) ->
                 let oldCommitTree =
                     commits.Get oldSha |> Commit.tree
                 let newCommitTree =
@@ -262,7 +262,7 @@ module TagCommitCollection =
     let inline private sliceTagsIndexImpl lowerIdx higherIdx collection=
         let inline tagCommitLookup sha = _.TagCommits[sha]
         let shas =
-            collection.TagCollection.OrderedKeys[lowerIdx..higherIdx].AsSpan()
+            collection.TagCollection.OrderedKeys[lowerIdx + 1..higherIdx].AsSpan()
         let shaCollection = HashSet(20)
         for sha in shas do
             shaCollection.UnionWith(tagCommitLookup sha collection)
@@ -272,8 +272,12 @@ module TagCommitCollection =
         sliceTagsIndexImpl idx1 idx2 collection
         |> toFrozenSet
     let getUnreleasedCommits latestTag collection =
-        let idx1 = collection.TagCollection.OrderedKeys |> Array.findIndex ((=) latestTag)
-        let idx2 = collection.TagCollection.OrderedKeys.Length - 1
+        let idx1 =
+            collection.TagCollection.OrderedKeys
+            |> Array.findIndex ((=) latestTag)
+        let idx2 =
+            collection.TagCollection.OrderedKeys.Length
+            |> (+) -1
         let result = sliceTagsIndexImpl idx1 idx2 collection
         result.UnionWith(collection.UntaggedCommits)
         result
@@ -298,14 +302,14 @@ module TagCommitCollection =
                 |> fun pairs ->
                     pairs
                     |> Array.map Choice1Of3
-                    |> Array.insertAt pairs.Length (
+                    |> Array.insertAt 0 (
                         pairs |> Array.head |> fst
                         |> Choice3Of3
                         )
-                    |> Array.insertAt 0 (
-                        pairs |> Array.last |> snd
-                        |> Choice2Of3
-                        )
+                    // |> Array.insertAt pairs.Length (
+                    //     pairs |> Array.last |> snd
+                    //     |> Choice2Of3
+                    //     )
                 |> Array.map (function
                     | Choice1Of3 tags ->
                         snd tags, getCommitsBetween (fst tags) (snd tags) collection
@@ -315,7 +319,7 @@ module TagCommitCollection =
                     | Choice3Of3 tag ->
                         tag, getCommitsBetween tag tag collection
                     >> fun (tag,commits) ->
-                        tag,
+                        collection.TagCollection.KeyDictionary[tag],
                         commits
                         |> Seq.filter (fun commit ->
                             try

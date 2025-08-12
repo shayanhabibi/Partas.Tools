@@ -7,7 +7,6 @@
     <Project Path="Partas.Tools.SepochSemver\Partas.Tools.SepochSemver.fsproj" Type="Classic F#" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="Partas.Tools.Cli.Binding.Tests/Partas.Tools.Cli.Binding.Tests.fsproj" />
     <Project Path="Partas.Tools.GitNet.Tests\Partas.Tools.GitNet.Tests.fsproj" Type="Classic F#" />
   </Folder>
   <Folder Name="/unfinished or abandonware/">

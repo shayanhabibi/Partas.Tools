@@ -25,8 +25,9 @@ let main args =
                 {
                     ProjectConfig.init with
                         // AutoScope = AutoScopeType.NoScoping
-                        AutoScope = AutoScopeType.Transform (fun inp ->
-                            inp.Split('.').Last())
+                        AutoScope = AutoScopeType.Transform (
+                            _.Split('.').Last() >> ValueSome
+                            )
                 }
     }
     |> fun config ->

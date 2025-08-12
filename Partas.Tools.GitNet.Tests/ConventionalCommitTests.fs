@@ -1,4 +1,4 @@
-﻿module ConventionalCommitTests
+﻿module ConventionalCommit.Tests
 
 open Expecto
 open Partas.Tools.ConventionalCommits

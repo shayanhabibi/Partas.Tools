@@ -97,7 +97,7 @@ let crackRepo (config: GitNetConfig) = voption {
                 | Transform transformer ->
                     proj |> Projects.tryGetTitle
                     |> ValueOption.orElse (path |> Path.GetFileNameWithoutExtension |> ValueSome)
-                    |> ValueOption.map transformer
+                    |> ValueOption.bind transformer
             Epoch = proj |> Projects.tryGetEpoch
         }
     return

@@ -140,7 +140,7 @@ type AutoScopeType =
     /// whether that project should be within a scope or not.
     /// Scoped projects do not get included in other tags.
     /// </summary>
-    | Transform of transformer: (string -> string)
+    | Transform of transformer: (string -> string voption)
 
 /// <summary>
 /// Configuration for details regarding project interaction.

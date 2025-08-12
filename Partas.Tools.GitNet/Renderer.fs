@@ -2,7 +2,6 @@ module Partas.Tools.GitNet.Renderer
 
 open System.Collections.Generic
 open LibGit2Sharp.FSharp
-open Partas.Tools.GitNet.GitCollector
 open Partas.Tools.GitNet.Types
 
 // Group our collection further into renderable groups.
@@ -29,13 +28,3 @@ module Render =
     type ScopeCollection = {
         Unscoped: Commit list
     }
-
-module GitCollector =
-    let makeRenders (config: GitNetConfig) (gitCollection: GitNetCollections) =
-        let repo = Repository.load config.RepositoryPath
-        let githubUrlRoot =
-            GitHub.find repo
-            |> ValueOption.map GitHub.urlRoot
-        let initState: Render.Scope list = []
-        ()
-        
