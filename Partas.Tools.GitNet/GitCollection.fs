@@ -150,7 +150,7 @@ module TagCollection =
             Repository.tags repo
             |> Seq.sortBy (
                 Tag.target
-                >> GitObject.peel<LibGit2Sharp.Commit>
+                >> GitObject.tryPeel<LibGit2Sharp.Commit>
                 >> ValueOption.map (Commit.committer >> Signature.date)
                 >> ValueOption.defaultValue DateTimeOffset.MaxValue
                 )
@@ -326,7 +326,7 @@ module TagCommitCollection =
                             collection.CommitScopes[commit].Contains scope
                             with :? KeyNotFoundException ->
                                 Repository.lookup commit.Value repo
-                                |> ValueOption.bind GitObject.peel<Commit>
+                                |> ValueOption.bind GitObject.tryPeel<Commit>
                                 |> ValueOption.map (
                                     Diff.commitPaths repo [collection.Scopes[scope]]
                                     >> fun changes ->

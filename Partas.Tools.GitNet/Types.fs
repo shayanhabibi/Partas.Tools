@@ -382,7 +382,7 @@ module GitNetCommit =
     /// Returns the parsed commit object from the container.
     let parsedCommit = function { ParsedCommit = parsed } -> parsed
     /// Retrieves the SHA key from the original commit object.
-    let sha = original >> Commit.hash
+    let sha = original >> Commit.sha
     /// Retrieves any notes attached to the original commit object.
     let notes = original >> Commit.notes
     module Sha =

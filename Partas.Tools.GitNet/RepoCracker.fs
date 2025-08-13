@@ -25,7 +25,7 @@ module private Repo =
     let private getRepoFromConfig (config: GitNetConfig) = config.RepositoryPath |> getRepository
     let getPath =
         getRepoFromConfig
-        >> ValueOption.bind (fun repo ->
+        >> ValueOption.map (fun repo ->
             let result = getWorkDir repo
             repo |> Repository.dispose
             result
