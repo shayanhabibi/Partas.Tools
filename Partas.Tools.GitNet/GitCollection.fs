@@ -302,24 +302,24 @@ module TagCommitCollection =
                 |> fun pairs ->
                     pairs
                     |> Array.map Choice1Of3
+                    |> Array.insertAt pairs.Length (
+                        pairs |> Array.last |> snd
+                        |> Choice2Of3
+                        )
                     |> Array.insertAt 0 (
                         pairs |> Array.head |> fst
                         |> Choice3Of3
                         )
-                    // |> Array.insertAt pairs.Length (
-                    //     pairs |> Array.last |> snd
-                    //     |> Choice2Of3
-                    //     )
                 |> Array.map (function
                     | Choice1Of3 tags ->
-                        snd tags, getCommitsBetween (fst tags) (snd tags) collection
+                        snd tags |> ValueSome, getCommitsBetween (fst tags) (snd tags) collection
                     | Choice2Of3 tag ->
-                        tag,
+                        ValueNone,
                         getUnreleasedCommits tag collection
                     | Choice3Of3 tag ->
-                        tag, getCommitsBetween tag tag collection
+                        tag |> ValueSome, getCommitsBetween tag tag collection
                     >> fun (tag,commits) ->
-                        collection.TagCollection.KeyDictionary[tag],
+                        tag |> ValueOption.map (fun tag -> collection.TagCollection.KeyDictionary[tag]),
                         commits
                         |> Seq.filter (fun commit ->
                             try

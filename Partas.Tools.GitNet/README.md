@@ -4,13 +4,13 @@ First purpose is automating `RELEASE_NOTES.md` generation with the flexibility I
 
 ## Requirements
 
-- [ ] Parse Commits
+- [x] Parse Commits
   - [x] Parse Conventional Commits
   - [x] Parse unconventional commits
-  - [ ] Collate critical information into a record
-- [ ] Find Projects
-  - [ ] Parse project source/compiled files
-  - [ ] SemVer based on changes to these items
+  - [x] Collate critical information into a record
+- [x] Find Projects
+  - [x] Parse project source/compiled files
+  - [x] SemVer based on changes to these items
 
 ## Spec
 
