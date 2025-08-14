@@ -34,7 +34,9 @@ module ErrorFormatting =
         |> formatParseError formatOne formatSeq error
         |> _.ToString()
 
+/// skip white string: spaces, new lines, returns etc
 let ws = skipMany (anyOf ([ ' '; '\n'; '\r'; '\t' ]))
+/// Parses a footer key
 let private pFooterKey =
     let pFooterKeyBreakingChange = pstring "BREAKING CHANGE"
     newline >>.
@@ -48,25 +50,42 @@ let private pFooterKey =
        <|> (satisfyL (function ' ' -> true | _ -> false) "Footers keys must be followed by \": \" or \" #\" "
             >>. satisfyL (function '#' -> true | _ -> false) "Footers keys must be followed by \": \" or \" #\" ")
         )
+/// Parses a footer value
 let private pFooterValue =
     ws >>. manyCharsTill anyChar (lookAhead pFooterKey <|> (eof >>% "")) |>> fst
+
+/// Parses a footer section
 let private pFooters =
     (newline >>. many (tuple2 pFooterKey pFooterValue |>> makeFooter) <|> (eof >>% [||].ToImmutableArray()))
+
+/// Parses '!' Breaking indication in type
 let private pBreakingType =
     (pstring "!: " >>. setUserState true) <|> (pstring ": " >>% ())
+
+/// Parses optional scope
 let private pScope =
     let success =
         pitem '(' >>. many1Chars asciiLetter .>> pitem ')' |>> _.ToLower() |>> ValueSome
     let failure =
         lookAhead (pitem ':' <|> pitem '!') >>% ValueNone
     success <|> failure
+
+/// Parses the type
 let private pType = many1Chars asciiLetter |>> _.ToLower()
+
+/// Strings type and scope parser together
 let private pTypeAndScope =
     tuple3 pType pScope pBreakingType
+
+/// Parses the description/subject
 let private pDescription =
     manyCharsTill (noneOf [ '\n'; '\r' ]) ((skipNewline >>. skipNewline) <|> eof) |>> fst
+
+/// Parses the body/content
 let private pBody =
     manyCharsTill anyChar (lookAhead (skipNewline >>. pFooterKey) <|> (eof >>% Unchecked.defaultof<_>)) |>> fst
+
+/// Parses a conventional commit
 let private pConventionalCommit =
     tuple4 pTypeAndScope  pDescription pBody pFooters
 

@@ -35,7 +35,7 @@ type ParsedCommit =
     | Breaking of ConventionalCommit
     | Unconventional of string
 module ConventionalCommit =
-    let getFooterValue key: ConventionalCommit -> string ValueOption = function
+    let tryGetFooterValue key: ConventionalCommit -> string ValueOption = function
         | { Footers = footers } ->
             footers
             |> List.tryPick(fun footer ->
@@ -45,7 +45,7 @@ module ConventionalCommit =
                 else None
                 )
             |> ValueOption.ofOption
-    let unsafeGetFooterValue key: ConventionalCommit -> string = function
+    let getFooterValue key: ConventionalCommit -> string = function
         | { Footers = footers } ->
             footers
             |> List.pick(fun footer ->

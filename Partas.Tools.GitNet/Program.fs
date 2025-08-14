@@ -33,7 +33,7 @@ let main args =
     |> fun config ->
         // computeGitNetCollections(config).Collection
         TagCommitCollection.load config
-        |> TagCommitCollection.collectScopes repo
+        |> Renderer.Render.fromTagCommitCollection config repo
         |> Seq.iter (printfn "%A")
     repo
     |> Repository.tags
